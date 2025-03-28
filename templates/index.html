@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/PNG" href="https://www.thinkit.co.nz/favicon.png">
+    <title>Think IT Product Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+		body {
+			font-family: 'Poppins', sans-serif;
+			margin: 0;
+			padding: 20px;
+			transition: background-color 0.3s, color 0.3s;
+		}
+		table { 
+			border-collapse: collapse; 
+			width: 100%; 
+			margin-top: 20px; 
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
+		}
+		th, td { 
+			border: 1px solid #e0e0e0; 
+			padding: 12px; 
+			text-align: left; 
+			transition: background-color 0.2s; 
+		}
+		th { 
+			background: linear-gradient(135deg, #f7f7f7, #e8e8e8); 
+			font-weight: 600; 
+			color: #333; 
+		}
+		#search { 
+			margin: 10px 0; 
+			padding: 8px 30px 8px 12px; 
+			width: 220px; 
+			border: 1px solid #ccc; 
+			border-radius: 20px; 
+			font-size: 14px; 
+			transition: border-color 0.3s; 
+		}
+		#search:focus { 
+			border-color: #009ae0; /* Updated to Think IT logo blue */
+			outline: none; 
+		}
+		.filters { 
+			display: flex;
+			flex-direction: column; /* Stack items vertically */
+			align-items: stretch; /* Stretch items to full width */
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 3;
+			padding: 15px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+			margin-bottom: 20px;
+		}
+		.night-mode { 
+			background-color: #1e1e1e; 
+			color: #ddd; 
+		}
+		.night-mode th { 
+			background: linear-gradient(135deg, #333, #2a2a2a); 
+		}
+		.night-mode .filters { 
+			background-color: #1e1e1e;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+		}
+		.night-mode td { 
+			border-color: #444; 
+		}
+		#nightModeToggle { 
+			padding: 8px 15px; 
+			cursor: pointer; 
+			background: #009ae0; /* Updated to Think IT logo blue */
+			color: #fff; 
+			border: none; 
+			border-radius: 20px; 
+			transition: background 0.3s; 
+		}
+		#nightModeToggle:hover { 
+			background: #007db3; /* Darker variant of Think IT blue for hover */
+		}
+		.dropdown { 
+			position: relative; 
+			display: inline-block; 
+		}
+		.dropdown-button { 
+			padding: 8px 15px; 
+			cursor: pointer; 
+			border: 1px solid #ccc; 
+			background: #009ae0; /* Updated to Think IT logo blue */ 
+			color: #fff;
+			border-radius: 20px; 
+			transition: background 0.3s; 
+		}
+		.dropdown-button:hover { 
+			background: #007db3; /* Darker variant of Think IT blue for hover */ 
+		}
+		.dropdown-content { 
+			display: none; 
+			position: absolute; 
+			background-color: #fff; 
+			min-width: 250px; 
+			border: 1px solid #ddd; 
+			z-index: 4; 
+			max-height: 500px; 
+			overflow-y: auto; 
+			border-radius: 8px; 
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+			animation: fadeIn 0.2s; 
+		}
+		.dropdown-content label { 
+			display: block; 
+			padding: 8px 12px; 
+			transition: background 0.2s; 
+		}
+		.dropdown-content label:hover { 
+			background-color: #f1f1f1; 
+		}
+		.night-mode .dropdown-content { 
+			background-color: #2a2a2a; 
+			border-color: #444; 
+		}
+		.night-mode .dropdown-content label:hover { 
+			background-color: #383838; 
+		}
+		.selected-brands { 
+			margin-top: 10px;
+			display: flex;
+			flex-wrap: nowrap;
+			gap: 8px;
+			overflow-x: auto;
+			width: 100%;
+			padding-bottom: 5px;
+			-webkit-overflow-scrolling: touch;
+		}
+		.selected-brand { 
+			background-color: #e8f0fe; 
+			padding: 5px 12px; 
+			border-radius: 15px; 
+			display: flex; 
+			align-items: center; 
+			gap: 5px; 
+			color: #009ae0; /* Updated to Think IT logo blue */
+			font-size: 14px; 
+		}
+		.selected-brand .remove-btn { 
+			cursor: pointer; 
+			color: #ff4444; 
+			font-weight: bold; 
+			transition: color 0.2s; 
+		}
+		.selected-brand .remove-btn:hover { 
+			color: #cc0000; 
+		}
+		.night-mode .selected-brand { 
+			background-color: #3a3a3a; 
+			color: #009ae0; /* Updated to Think IT logo blue */
+		}
+		.night-mode .selected-brand .remove-btn { 
+			color: #ff6666; 
+		}
+		.deselect-all { 
+			padding: 8px; 
+			background-color: #f5f5f5; 
+			border-bottom: 1px solid #ddd; 
+			cursor: pointer; 
+			text-align: center; 
+			position: sticky; 
+			top: 0; 
+			z-index: 2; 
+			font-size: 14px; 
+		}
+		.deselect-all:hover { 
+			background-color: #e0e0e0; 
+		}
+		.night-mode .deselect-all { 
+			background-color: #333; 
+			border-bottom: 1px solid #444; 
+		}
+		.night-mode .deselect-all:hover { 
+			background-color: #444; 
+		}
+		.pagination-controls { 
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			flex-wrap: wrap; /* Allow wrapping for small screens */
+			margin-top: 10px; /* Space above pagination */
+			align-self: flex-end; /* Push pagination to the right */
+		}
+		.pagination-controls button { 
+			padding: 8px 16px; 
+			cursor: pointer; 
+			border: 1px solid #ccc; 
+			background: #fff; 
+			border-radius: 20px; 
+			font-size: 14px; 
+			transition: background 0.3s, transform 0.1s; 
+		}
+		.pagination-controls button:hover:not(:disabled) { 
+			background: #f5f5f5; 
+			transform: translateY(-1px); 
+		}
+		.pagination-controls button:disabled { 
+			cursor: not-allowed; 
+			opacity: 0.5; 
+		}
+		.night-mode .pagination-controls button { 
+			background: #333; 
+			border-color: #444; 
+			color: #fff; 
+		}
+		.night-mode .pagination-controls button:hover:not(:disabled) { 
+			background: #444; 
+		}
+		.pagination-controls .page-numbers { 
+			display: flex; 
+			gap: 8px; 
+		}
+		.pagination-controls .page-numbers button { 
+			padding: 6px 12px; 
+			min-width: 36px; 
+		}
+		.pagination-controls .page-numbers button.active { 
+			background: #009ae0; /* Updated to Think IT logo blue */
+			color: #fff; 
+			border-color: #009ae0; /* Updated to Think IT logo blue */
+		}
+		.pagination-controls input[type="number"] { 
+			padding: 8px; 
+			border: 1px solid #ccc; 
+			border-radius: 20px; 
+			background: #fff; 
+			width: 60px; 
+			text-align: center; 
+			font-size: 14px; 
+			transition: border-color 0.3s, box-shadow 0.3s; 
+		}
+		.pagination-controls input[type="number"]:focus { 
+			border-color: #009ae0; /* Updated to Think IT logo blue */
+			box-shadow: 0 0 5px rgba(0, 154, 224, 0.5); /* Adjusted for Think IT blue */
+			outline: none; 
+		}
+		.night-mode .pagination-controls input[type="number"] { 
+			background: #333; 
+			border-color: #444; 
+			color: #fff; 
+		}
+		.night-mode .pagination-controls input[type="number"]:focus { 
+			border-color: #009ae0; /* Updated to Think IT logo blue */
+			box-shadow: 0 0 5px rgba(0, 154, 224, 0.5); /* Adjusted for Think IT blue */
+		}
+		.left-controls { 
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			flex-wrap: wrap; /* Allow wrapping if screen is narrow */
+		}
+		.brand-count { 
+			color: #777; 
+			font-size: 0.9em; 
+			margin-left: 5px; 
+		}
+		.night-mode .brand-count { 
+			color: #bbb; 
+		}
+		.item-count { 
+			font-size: 0.9em; 
+			color: #777; 
+		}
+		.night-mode .item-count { 
+			color: #bbb; 
+		}
+		#pageLogo {
+			height: 50px;
+			margin-bottom: 20px;
+		}
+		.search-container { 
+			position: relative; 
+			display: inline-block; 
+		}
+		#clearSearch {
+			position: absolute;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%);
+			background: none;
+			border: none;
+			font-size: 16px;
+			cursor: pointer;
+			color: #777;
+			display: none;
+			transition: color 0.2s;
+		}
+		#clearSearch:hover { 
+			color: #ff4444; 
+		}
+		.night-mode #clearSearch { 
+			color: #bbb; 
+		}
+		.night-mode #clearSearch:hover { 
+			color: #ff6666; 
+		}
+		.copy-btn {
+			margin-left: 5px;
+			padding: 2px 4px;
+			font-size: 12px;
+			background: #f5f5f5;
+			border: 1px solid #ddd;
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			line-height: 14px;
+			text-align: center;
+			cursor: pointer;
+			transition: background 0.3s;
+		}
+		.copy-btn:hover {
+			background: #e0e0e0;
+		}
+		.copy-btn.copied {
+			background: #d4edda;
+			border-color: #c3e6cb;
+		}
+		.night-mode .copy-btn {
+			background: #444;
+			border-color: #666;
+			color: #fff;
+		}
+		.night-mode .copy-btn:hover {
+			background: #555;
+		}
+		.night-mode .copy-btn.copied {
+			background: #155724;
+			border-color: #c3e6cb;
+		}
+		#productTable tbody tr:hover {
+			background-color: #f9f9f9;
+			transition: background-color 0.2s ease;
+		}
+		.night-mode #productTable tbody tr:hover {
+			background-color: #2a2a2a;
+		}
+		h1 {
+			font-size: 28px;
+			color: #333;
+			margin: 0 0 10px;
+		}
+		.night-mode h1 {
+			color: #ddd;
+		}
+		p {
+			color: #666;
+			font-size: 14px;
+		}
+		.night-mode p {
+			color: #aaa;
+		}
+		@keyframes fadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
+		}
+		.show-more-btn {
+			background: none;
+			border: none;
+			color: #666;
+			font-size: 14px;
+			padding: 2px 4px;
+			width: 24px;
+			text-align: center;
+			cursor: pointer;
+			text-decoration: underline;
+			transition: color 0.2s;
+		}
+		.show-more-btn:hover {
+			color: #009ae0; /* Updated to Think IT logo blue */
+		}
+		.night-mode .show-more-btn {
+			color: #ccc;
+		}
+		.night-mode .show-more-btn:hover {
+			color: #009ae0; /* Updated to Think IT logo blue */
+		}
+		.long-description {
+			margin-top: 6px;
+			font-style: italic;
+			color: #555;
+			font-size: 13px;
+			max-width: 100%;
+			white-space: pre-line;
+		}
+		.night-mode .long-description {
+			color: #bbb;
+		}
+		#productTable {
+			table-layout: fixed;
+			width: 100%;
+			margin-top: 20px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		}
+		.brand-col { width: 15%; }
+		.desc-col { width: 30%; min-width: 200px; }
+		.mfr-col { width: 15%; }
+		.cost-col { width: 10%; }
+		.sell-col { width: 10%; }
+		.stock-col { width: 10%; }
+		.supplier-col { width: 10%; }
+		th, td {
+			border: 1px solid #e0e0e0;
+			padding: 12px;
+			text-align: left;
+			transition: background-color 0.2s;
+			overflow-wrap: break-word;
+		}
+		th {
+			background: linear-gradient(135deg, #f7f7f7, #e8e8e8);
+			font-weight: 600;
+			color: #333;
+		}
+		.night-mode th {
+			background: linear-gradient(135deg, #444, #333);
+			color: #eee;
+		}
+		.sticky-header {
+			position: sticky;
+			top: var(--sticky-top, 130px); /* Fallback to 130px if not set */
+			z-index: 2;
+			background: linear-gradient(135deg, #f7f7f7, #e8e8e8);
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		}
+
+		.night-mode .sticky-header {
+			background: linear-gradient(135deg, #444, #333);
+			color: #eee;
+		}
+		.description-content {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			flex-wrap: wrap;
+		}
+		/* Scroll to Top Button Styles */
+		#scrollToTopBtn {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			padding: 10px 15px;
+			background: #009ae0; /* Updated to Think IT logo blue */
+			color: #fff;
+			border: none;
+			border-radius: 50%;
+			cursor: pointer;
+			font-size: 16px;
+			display: none;
+			transition: background 0.3s, opacity 0.3s;
+			z-index: 5;
+		}
+		#scrollToTopBtn:hover {
+			background: #007db3; /* Darker variant of Think IT blue for hover */
+		}
+		.night-mode #scrollToTopBtn {
+			background: #009ae0; /* Updated to Think IT logo blue */
+		}
+		.night-mode #scrollToTopBtn:hover {
+			background: #007db3; /* Darker variant of Think IT blue for hover */
+		}
+		#sortByStockBtn {
+			padding: 8px 15px;
+			cursor: pointer;
+			background: #009ae0;
+			color: #fff;
+			border: none;
+			border-radius: 20px;
+			transition: background 0.3s;
+		}
+		#sortByStockBtn:hover {
+			background: #007db3;
+		}
+		.night-mode #sortByStockBtn {
+			background: #009ae0;
+		}
+		.night-mode #sortByStockBtn:hover {
+			background: #007db3;
+		}
+		.stock-col #sortStockArrow {
+			font-size: 14px;
+			transition: transform 0.3s;
+		}
+		.stock-col #sortStockArrow.asc {
+			transform: rotate(0deg); /* Up arrow for ascending */
+		}
+		.stock-col #sortStockArrow.desc {
+			transform: rotate(0deg); /* Down arrow for descending, no rotation needed */
+		}
+		.stock-col #sortStockArrow.default {
+			transform: rotate(0deg); /* Double-headed arrow for default */
+		}
+		.night-mode .stock-col #sortStockArrow {
+			color: #eee; /* Match night mode text color */
+		}
+		.cost-col #sortCostArrow {
+			font-size: 14px;
+			transition: transform 0.3s;
+		}
+		.cost-col #sortCostArrow.asc {
+			transform: rotate(0deg); /* Up arrow for ascending */
+		}
+		.cost-col #sortCostArrow.desc {
+			transform: rotate(0deg); /* Down arrow for descending, no rotation needed */
+		}
+		.cost-col #sortCostArrow.default {
+			transform: rotate(0deg); /* Double-headed arrow for default */
+		}
+		.night-mode .cost-col #sortCostArrow {
+			color: #eee; /* Match night mode text color */
+		}
+		.cost-col, .stock-col {
+			user-select: none; /* Prevents text selection */
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			cursor: pointer; /* Changes cursor to pointer on hover */
+			transition: background-color 0.2s ease; /* Smooth transition for background */
+		}
+
+		.cost-col:hover, .stock-col:hover {
+			background: #f0f0f0; /* Light grey background on hover for day mode */
+		}
+
+		.night-mode .cost-col:hover, .night-mode .stock-col:hover {
+			background: #555; /* Slightly lighter grey for night mode */
+		}
+	</style>
+</head>
+<button id="scrollToTopBtn" onclick="scrollToTop()">↑ Top</button>
+<body>
+    <body>
+		<div style="display: flex; align-items: center; gap: 20px;">
+			<img src="/static/logo.png" alt="Think IT Logo" id="pageLogo">
+			<h1>Product Search</h1>
+		</div>
+		<p style="margin-top: -10px;">*items sourced from Dicker Data, Ingram Micro, Dove, SnapperNet and Computer Dynamics</p>
+    <div class="filters">
+		<div class="left-controls">
+			<div class="search-container">
+				<input type="text" id="search" placeholder="Search here" oninput="filterTable(); toggleClearButton();">
+				<button id="clearSearch" onclick="clearSearch()">×</button>
+			</div>
+			<div class="dropdown">
+				<button class="dropdown-button" onclick="toggleDropdown()">Select Brands</button>
+				<div id="brandFilter" class="dropdown-content">
+					<div class="deselect-all" onclick="deselectAllBrands()">Deselect All</div>
+				</div>
+			</div>
+			<button id="nightModeToggle" onclick="toggleNightMode()">Toggle Night Mode</button>
+			<span id="itemCount" class="item-count"></span>
+		</div>
+		<div id="paginationControls" class="pagination-controls"></div>
+		<div id="selectedBrands" class="selected-brands"></div>
+	</div>
+    <table id="productTable">
+		<thead>
+			<tr class="sticky-header">
+				<th class="brand-col">Brand</th>
+				<th class="desc-col">Description</th>
+				<th class="mfr-col">Manufacturer Code</th>
+				<th class="cost-col" onclick="toggleSortByCost()">
+					Cost
+					<span id="sortCostArrow" style="cursor: pointer; margin-left: 5px;">↕</span>
+				</th>
+				<th class="sell-col">Sell Price</th>
+				<th class="stock-col" onclick="toggleSortByStock()">
+					Stock
+					<span id="sortStockArrow" style="cursor: pointer; margin-left: 5px;">↕</span>
+				</th>
+				<th class="supplier-col">Supplier</th>
+			</tr>
+		</thead>
+		<tbody id="productBody"></tbody>
+	</table>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuzzysort@3.1.0/fuzzysort.min.js"></script>
+    <script>
+    console.log("Script loaded");
+
+    let allBrands = new Set();
+    let currentPage = 1;
+    const itemsPerPage = 100;
+    let allProducts = [];
+    let brandTotalCounts = {};
+    let brandLabels = {};
+    let brandDisplayNames = {};
+	let sortByStock = 'default'; // 'default', 'desc', or 'asc'
+	let sortByCost = 'default'; // 'default', 'desc', or 'asc'
+
+    fetch('/api/products')
+        .then(response => {
+            console.log("Fetch response status:", response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Data received:", data);
+            allProducts = data;
+            const tbody = document.getElementById('productBody');
+            const brandFilter = document.getElementById('brandFilter');
+            
+            if (!tbody || !data || data.length === 0) {
+                console.log("No data to display or table body not found");
+                return;
+            }
+
+            data.forEach(product => {
+                if (product.Brand) {
+                    const normalizedBrand = product.Brand.toLowerCase();
+                    allBrands.add(normalizedBrand);
+                    brandTotalCounts[normalizedBrand] = (brandTotalCounts[normalizedBrand] || 0) + 1;
+                    if (!brandDisplayNames[normalizedBrand]) {
+                        brandDisplayNames[normalizedBrand] = product.Brand;
+                    }
+                }
+            });
+
+            const sortedBrands = Array.from(allBrands).sort((a, b) => a.localeCompare(b));
+            sortedBrands.forEach(normalizedBrand => {
+                const displayName = brandDisplayNames[normalizedBrand];
+                const label = document.createElement('label');
+                label.innerHTML = `
+                    <input type="checkbox" value="${normalizedBrand}" onchange="updateSelectedBrands()"> ${displayName} 
+                    <span class="brand-count">(${brandTotalCounts[normalizedBrand] || 0})</span>
+                `;
+                brandFilter.appendChild(label);
+                brandLabels[normalizedBrand] = label;
+            });
+
+            renderTable();
+            updatePaginationControls();
+            updateSelectedBrands();
+            updateItemCount();
+			updateStickyHeaderPosition(); // Initial call
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+        });
+
+	function updateStickyHeaderPosition() {
+		const filtersDiv = document.querySelector('.filters');
+		const stickyHeader = document.querySelector('.sticky-header');
+		const filtersHeight = filtersDiv.offsetHeight; // Get the full height of the filters div
+		stickyHeader.style.setProperty('--sticky-top', `${filtersHeight}px`);
+	}
+
+    function renderTable() {
+        const tbody = document.getElementById('productBody');
+		tbody.innerHTML = '';
+
+		const startIndex = (currentPage - 1) * itemsPerPage;
+		const endIndex = Math.min(startIndex + itemsPerPage, allProducts.length);
+		let filteredProducts = filterProducts();
+
+		// Group products by ManufacturerCode
+		const productGroups = {};
+		filteredProducts.forEach(product => {
+			const code = product.ManufacturerCode || 'N/A';
+			if (!productGroups[code]) {
+				productGroups[code] = [];
+			}
+			productGroups[code].push(product);
+		});
+
+		// Convert groups to an array of groups
+		let groupedProducts = Object.values(productGroups);
+
+		// Apply sorting based on sortByStock or sortByCost
+		if (sortByStock !== 'default') {
+			groupedProducts.sort((groupA, groupB) => {
+				const maxStockA = Math.max(...groupA.map(p => parseInt(p.Stock) || 0));
+				const maxStockB = Math.max(...groupB.map(p => parseInt(p.Stock) || 0));
+				return sortByStock === 'desc' ? maxStockB - maxStockA : maxStockA - maxStockB;
+			});
+		} else if (sortByCost !== 'default') {
+			groupedProducts.sort((groupA, groupB) => {
+				const minCostA = Math.min(...groupA.map(p => parseFloat(p.Cost) || 0));
+				const minCostB = Math.min(...groupB.map(p => parseFloat(p.Cost) || 0));
+				return sortByCost === 'desc' ? minCostB - minCostA : minCostA - minCostB;
+			});
+		}
+		// If both are 'default', no additional sorting is applied
+
+		// Flatten the sorted groups back into a single array
+		let sortedProducts = [];
+		groupedProducts.forEach(group => {
+			sortedProducts.push(...group);
+		});
+
+		// Render the table (rest of the function remains unchanged)
+		for (let i = startIndex; i < endIndex && i < sortedProducts.length; i++) {
+			const product = sortedProducts[i];
+			const row = document.createElement('tr');
+			const formatPrice = (price) =>
+				price ? '$' + Number(price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '$0.00';
+
+			const hasLongDescription = product.LongDescription && product.LongDescription !== 'None';
+			const longDescId = `long-desc-${i}`;
+
+			const descriptionCell = `
+				<div class="description-content">
+					${product.Description || 'N/A'}
+					${hasLongDescription ? `<button class="show-more-btn" onclick="toggleLongDescription('${longDescId}')">[+]</button>` : ''}
+				</div>
+				${hasLongDescription ? `<div id="${longDescId}" class="long-description" style="display: none;">${product.LongDescription}</div>` : ''}
+			`;
+
+			row.innerHTML = `
+				<td>${product.Brand || 'N/A'}</td>
+				<td>${descriptionCell}</td>
+				<td>
+					${product.ManufacturerCode || 'N/A'}
+					${product.ManufacturerCode ? `<button class="copy-btn" onclick="copyToClipboard(this, '${product.ManufacturerCode}')">📋</button>` : ''}
+				</td>
+				<td>${formatPrice(product.Cost)}</td>
+				<td>${formatPrice(product.SellPrice)}</td>
+				<td>${product.Stock || 'N/A'}</td>
+				<td>${product.Supplier || 'N/A'}</td>
+			`;
+			tbody.appendChild(row);
+		}
+
+		updateItemCount();
+		updateBrandCounts();
+		updateStickyHeaderPosition(); // Update position after rendering
+	}
+
+	// Ensure the arrow starts in the default state when the page loads
+	document.addEventListener('DOMContentLoaded', () => {
+		const stockArrow = document.getElementById('sortStockArrow');
+		stockArrow.textContent = '↕';
+		stockArrow.classList.add('default');
+
+		const costArrow = document.getElementById('sortCostArrow');
+		costArrow.textContent = '↕';
+		costArrow.classList.add('default');
+	});
+
+    function toggleLongDescription(id) {
+        const longDescDiv = document.getElementById(id);
+        const isHidden = longDescDiv.style.display === 'none';
+        longDescDiv.style.display = isHidden ? 'block' : 'none';
+        const button = longDescDiv.previousElementSibling.querySelector('.show-more-btn');
+        button.textContent = isHidden ? '[-]' : '[+]';
+    }
+
+    function copyToClipboard(button, text) {
+		if (navigator.clipboard && window.isSecureContext) {
+			// Use modern clipboard API if available and in secure context
+			navigator.clipboard.writeText(text)
+				.then(() => {
+					console.log(`Copied "${text}" to clipboard`);
+					button.classList.add('copied');
+					button.innerHTML = '✓';
+					setTimeout(() => {
+						button.classList.remove('copied');
+						button.innerHTML = '📋';
+					}, 1000);
+				})
+				.catch(err => {
+					console.error('Clipboard API failed: ', err);
+					fallbackCopy(text, button);
+				});
+		} else {
+			// Fallback for non-secure contexts
+			fallbackCopy(text, button);
+		}
+	}
+
+	function fallbackCopy(text, button) {
+		const tempInput = document.createElement('input');
+		document.body.appendChild(tempInput);
+		tempInput.value = text;
+		tempInput.select();
+		try {
+			document.execCommand('copy');
+			console.log(`Fallback: Copied "${text}" to clipboard`);
+			button.classList.add('copied');
+			button.innerHTML = '✓';
+			setTimeout(() => {
+				button.classList.remove('copied');
+				button.innerHTML = '📋';
+			}, 1000);
+		} catch (err) {
+			console.error('Fallback copy failed: ', err);
+		}
+		document.body.removeChild(tempInput);
+    }
+
+    function filterProducts() {
+		const searchInput = document.getElementById('search').value.toLowerCase();
+		const brandCheckboxes = document.getElementById('brandFilter').getElementsByTagName('input');
+		const selectedBrands = Array.from(brandCheckboxes)
+			.filter(cb => cb.checked)
+			.map(cb => cb.value.toLowerCase());
+
+		let filtered = allProducts.filter(product => {
+			const brand = (product.Brand || '').toLowerCase();
+			return selectedBrands.length === 0 || selectedBrands.includes(brand);
+		});
+
+		if (searchInput) {
+			const targets = allProducts.map(product => ({
+				original: product,
+				brand: (product.Brand || '').toLowerCase(),
+				description: (product.Description || '').toLowerCase(),
+				code: (product.ManufacturerCode || '').toLowerCase(),
+				longDescription: (product.LongDescription || '').toLowerCase()
+			}));
+
+			const results = fuzzysort.go(searchInput, targets, {
+				keys: ['brand', 'description', 'code', 'longDescription'],
+				threshold: 0.4,
+				limit: 1000,
+				scoreFn: (result) => {
+					const brandScore = result[0] ? result[0].score : -Infinity;
+					const descScore = result[1] ? result[1].score : -Infinity;
+					const codeScore = result[2] ? result[2].score * 0.8 : -Infinity;
+					const longDescScore = result[3] ? result[3].score : -Infinity;
+					return Math.max(brandScore, descScore, codeScore, longDescScore);
+				}
+			});
+
+			filtered = results.map(result => result.obj.original)
+				.filter(product => {
+					const brand = (product.Brand || '').toLowerCase();
+					return selectedBrands.length === 0 || selectedBrands.includes(brand);
+				});
+		}
+
+		return filtered;
+	}
+
+    function filterProductsForCounts() {
+        const searchInput = document.getElementById('search').value.trim().toLowerCase();
+        
+        if (!searchInput) {
+            return allProducts;
+        }
+
+        const targets = allProducts.map(product => ({
+            original: product,
+            brand: (product.Brand || '').toLowerCase(),
+            description: (product.Description || '').toLowerCase(),
+            code: (product.ManufacturerCode || '').toLowerCase(),
+            longDescription: (product.LongDescription || '').toLowerCase()
+        }));
+
+        const results = fuzzysort.go(searchInput, targets, {
+            keys: ['brand', 'description', 'code', 'longDescription'],
+            threshold: 0.4,
+            limit: 1000,
+            scoreFn: (result) => {
+                const codeScore = result[2] ? result[2].score : -Infinity;
+                const descScore = result[1] ? result[1].score : -Infinity;
+                const brandScore = result[0] ? result[0].score : -Infinity;
+                const longDescScore = result[3] ? result[3].score : -Infinity;
+                return Math.max(codeScore * 1.2, descScore, brandScore, longDescScore);
+            }
+        });
+
+        return results.map(result => result.obj.original);
+    }
+
+    function updateBrandCounts() {
+        const filteredProducts = filterProductsForCounts();
+        const brandCounts = {};
+        
+        filteredProducts.forEach(product => {
+            const normalizedBrand = (product.Brand || '').toLowerCase();
+            if (normalizedBrand) {
+                brandCounts[normalizedBrand] = (brandCounts[normalizedBrand] || 0) + 1;
+            }
+        });
+
+        Object.keys(brandLabels).forEach(normalizedBrand => {
+            const label = brandLabels[normalizedBrand];
+            const count = brandCounts[normalizedBrand] || 0;
+            const countSpan = label.getElementsByClassName('brand-count')[0];
+            countSpan.textContent = `(${count})`;
+            label.style.display = count === 0 ? 'none' : 'block';
+        });
+    }
+
+    function updatePaginationControls() {
+        const totalItems = filterProducts().length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const paginationDiv = document.getElementById('paginationControls');
+        
+        let pageNumbersHTML = '';
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+        let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+        if (endPage - startPage + 1 < maxButtons) {
+            startPage = Math.max(1, endPage - maxButtons + 1);
+        }
+
+        if (startPage > 1) {
+            pageNumbersHTML += `<button onclick="changePage(1)">1</button>`;
+            if (startPage > 2) pageNumbersHTML += `<span>...</span>`;
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbersHTML += `
+                <button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>
+            `;
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) pageNumbersHTML += `<span>...</span>`;
+            pageNumbersHTML += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+        }
+
+        paginationDiv.innerHTML = `
+            <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</button>
+            <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+            <div class="page-numbers">${pageNumbersHTML}</div>
+            <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+            <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button>
+            <span>Go to: </span>
+            <input type="number" id="pageInput" value="${currentPage}" min="1" max="${totalPages}" 
+					onchange="changePage(this.value)">
+        `;
+    }
+
+    function changePage(newPage) {
+        const totalItems = filterProducts().length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        let pageNum = parseInt(newPage);
+        
+        if (isNaN(pageNum) || pageNum < 1) {
+            pageNum = 1;
+        } else if (pageNum > totalPages) {
+            pageNum = totalPages;
+        }
+        
+        if (pageNum >= 1 && pageNum <= totalPages) {
+            currentPage = pageNum;
+            renderTable();
+            updatePaginationControls();
+            document.getElementById('pageInput').value = currentPage;
+        }
+    }
+
+    function filterTable() {
+        currentPage = 1;
+        renderTable();
+        updatePaginationControls();
+    }
+
+    function updateSelectedBrands() {
+        const brandCheckboxes = document.getElementById('brandFilter').getElementsByTagName('input');
+        const selectedBrandsContainer = document.getElementById('selectedBrands');
+        selectedBrandsContainer.innerHTML = '';
+
+        Array.from(brandCheckboxes)
+            .filter(cb => cb.checked)
+            .forEach(cb => {
+                const normalizedBrand = cb.value.toLowerCase();
+                const displayName = brandDisplayNames[normalizedBrand];
+                const brandTag = document.createElement('div');
+                brandTag.className = 'selected-brand';
+                brandTag.innerHTML = `
+                    ${displayName} <span class="remove-btn" onclick="removeBrand('${normalizedBrand}')">x</span>
+                `;
+                selectedBrandsContainer.appendChild(brandTag);
+            });
+
+        filterTable();
+		updateStickyHeaderPosition(); // Update position after brand selection changes
+    }
+
+    function removeBrand(normalizedBrand) {
+        const brandCheckboxes = document.getElementById('brandFilter').getElementsByTagName('input');
+        Array.from(brandCheckboxes)
+            .filter(cb => cb.value.toLowerCase() === normalizedBrand)
+            .forEach(cb => cb.checked = false);
+        updateSelectedBrands();
+    }
+
+    function deselectAllBrands() {
+        const brandCheckboxes = document.getElementById('brandFilter').getElementsByTagName('input');
+        Array.from(brandCheckboxes).forEach(cb => cb.checked = false);
+        updateSelectedBrands();
+    }
+
+    function toggleNightMode() {
+        document.body.classList.toggle('night-mode');
+        const button = document.getElementById('nightModeToggle');
+        button.textContent = document.body.classList.contains('night-mode') 
+            ? 'Toggle Day Mode' 
+            : 'Toggle Night Mode';
+    }
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById('brandFilter');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function updateItemCount() {
+        const filteredCount = filterProducts().length;
+        const totalCount = allProducts.length;
+        const itemCountSpan = document.getElementById('itemCount');
+        itemCountSpan.textContent = `Showing ${filteredCount} of ${totalCount} items`;
+    }
+
+    function clearSearch() {
+        const searchInput = document.getElementById('search');
+        searchInput.value = '';
+        toggleClearButton();
+        filterTable();
+    }
+
+    function toggleClearButton() {
+        const searchInput = document.getElementById('search');
+        const clearButton = document.getElementById('clearSearch');
+        clearButton.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+    }
+
+	// Scroll to Top functionality
+	function scrollToTop() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+		
+	function toggleSortByStock() {
+		const arrow = document.getElementById('sortStockArrow');
+		if (sortByStock === 'default') {
+			sortByStock = 'desc'; // First click -> descending
+			sortByCost = 'default'; // Reset cost sorting
+			document.getElementById('sortCostArrow').textContent = '↕';
+			document.getElementById('sortCostArrow').classList.remove('asc', 'desc');
+			document.getElementById('sortCostArrow').classList.add('default');
+			arrow.textContent = '↓';
+			arrow.classList.remove('default', 'asc');
+			arrow.classList.add('desc');
+		} else if (sortByStock === 'desc') {
+			sortByStock = 'asc'; // Second click -> ascending
+			arrow.textContent = '↑';
+			arrow.classList.remove('desc', 'default');
+			arrow.classList.add('asc');
+		} else {
+			sortByStock = 'default'; // Third click -> back to default
+			arrow.textContent = '↕';
+			arrow.classList.remove('asc', 'desc');
+			arrow.classList.add('default');
+		}
+		filterTable(); // Re-render table with new sort order
+	}
+
+	function toggleSortByCost() {
+		const arrow = document.getElementById('sortCostArrow');
+		if (sortByCost === 'default') {
+			sortByCost = 'asc'; // First click -> ascending
+			sortByStock = 'default'; // Reset stock sorting
+			document.getElementById('sortStockArrow').textContent = '↕';
+			document.getElementById('sortStockArrow').classList.remove('asc', 'desc');
+			document.getElementById('sortStockArrow').classList.add('default');
+			arrow.textContent = '↑';
+			arrow.classList.remove('default', 'desc');
+			arrow.classList.add('asc');
+		} else if (sortByCost === 'asc') {
+			sortByCost = 'desc'; // Second click -> descending
+			arrow.textContent = '↓';
+			arrow.classList.remove('asc', 'default');
+			arrow.classList.add('desc');
+		} else {
+			sortByCost = 'default'; // Third click -> back to default
+			arrow.textContent = '↕';
+			arrow.classList.remove('asc', 'desc');
+			arrow.classList.add('default');
+		}
+		filterTable(); // Re-render table with new sort order
+	}
+
+	// Show/hide Scroll to Top button based on scroll position
+	window.onscroll = function() {
+		const scrollBtn = document.getElementById('scrollToTopBtn');
+		if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+			scrollBtn.style.display = 'block';
+		} else {
+			scrollBtn.style.display = 'none';
+		}
+	};
+
+	// Update changePage to scroll to top after page change (optional)
+	function changePage(newPage) {
+		const totalItems = filterProducts().length;
+		const totalPages = Math.ceil(totalItems / itemsPerPage);
+		let pageNum = parseInt(newPage);
+		
+		if (isNaN(pageNum) || pageNum < 1) {
+			pageNum = 1;
+		} else if (pageNum > totalPages) {
+			pageNum = totalPages;
+		}
+		
+		if (pageNum >= 1 && pageNum <= totalPages) {
+			currentPage = pageNum;
+			renderTable();
+			updatePaginationControls();
+			document.getElementById('pageInput').value = currentPage;
+			// Optional: Scroll to top after page change
+			scrollToTop();
+		}
+	}
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-button') && 
+            !event.target.closest('.dropdown-content')) {
+            const dropdowns = document.getElementsByClassName('dropdown-content');
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.style.display === 'block') {
+                    openDropdown.style.display = 'none';
+                }
+            }
+        }
+    }
+    </script>
+</body>
+</html>
